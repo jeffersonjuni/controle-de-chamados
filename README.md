@@ -26,7 +26,6 @@ Este projeto foi pensado tanto para uso real em ambientes corporativos quanto co
 - ESLint + Prettier
 - Conventional Commits
 
-
 ---
 
 ## 📌 Funcionalidades Principais

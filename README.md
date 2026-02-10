@@ -14,16 +14,18 @@ Este projeto foi pensado tanto para uso real em ambientes corporativos quanto co
 
 ---
 
-## 🛠️ Stack Tecnológica (prevista)
+## 🛠️ Stack Tecnológica
 
-- **Front-end:** Next.js (App Router)
-- **Back-end:** Next.js API Routes
-- **ORM:** Prisma
-- **Banco de Dados:** MySQL
-- **Autenticação:** NextAuth
-- **Estilização:** Tailwind CSS
-- **Infraestrutura:** Docker & Docker Compose
-- **Padrões:** ESLint, Prettier, Conventional Commits
+- Next.js 14 (App Router)
+- TypeScript
+- Prisma ORM
+- MySQL 8
+- NextAuth v5
+- Tailwind CSS
+- Docker & Docker Compose
+- ESLint + Prettier
+- Conventional Commits
+
 
 ---
 

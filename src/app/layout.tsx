@@ -1,4 +1,4 @@
-import './globals.css';
+import '../styles/global.css';
 
 export const metadata = {
   title: 'Sistema de Controle de Chamados',

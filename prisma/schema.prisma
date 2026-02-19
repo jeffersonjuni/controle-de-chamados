@@ -1,0 +1,149 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql" 
+}
+
+//////////////////////////////////////////////////////
+// ENUMS
+//////////////////////////////////////////////////////
+
+enum Role {
+  CLIENT
+  SUPPORT
+  ADMIN
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_CLIENT
+  RESOLVED
+  CLOSED
+  CANCELED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+//////////////////////////////////////////////////////
+// MODELS
+//////////////////////////////////////////////////////
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  password     String
+  role         Role
+
+  isActive     Boolean  @default(true)
+  deletedAt    DateTime?
+
+  createdById  String?
+  updatedById  String?
+
+  createdBy    User?    @relation("UserCreatedBy", fields: [createdById], references: [id])
+  updatedBy    User?    @relation("UserUpdatedBy", fields: [updatedById], references: [id])
+
+  usersCreated User[]   @relation("UserCreatedBy")
+  usersUpdated User[]   @relation("UserUpdatedBy")
+
+  ticketsCreated  Ticket[] @relation("TicketCreatedBy")
+  ticketsAssigned Ticket[] @relation("TicketAssignedTo")
+
+  comments    TicketComment[]
+  histories   TicketHistory[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Ticket {
+  id            String       @id @default(uuid())
+  title         String
+  description   String
+
+  status        TicketStatus @default(OPEN)
+  priority      Priority     @default(MEDIUM)
+
+  categoryId    String
+  category      TicketCategory @relation(fields: [categoryId], references: [id])
+
+  createdById   String
+  createdBy     User @relation("TicketCreatedBy", fields: [createdById], references: [id])
+
+  assignedToId  String?
+  assignedTo    User? @relation("TicketAssignedTo", fields: [assignedToId], references: [id])
+
+  comments      TicketComment[]
+  histories     TicketHistory[]
+
+  resolvedAt    DateTime?
+  closedAt      DateTime?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model TicketCategory {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  description String?
+  isActive    Boolean @default(true)
+
+  tickets     Ticket[]
+  sla         SLA?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model TicketComment {
+  id        String @id @default(uuid())
+  content   String
+
+  ticketId  String
+  ticket    Ticket @relation(fields: [ticketId], references: [id])
+
+  authorId  String
+  author    User @relation(fields: [authorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TicketHistory {
+  id           String @id @default(uuid())
+
+  ticketId     String
+  ticket       Ticket @relation(fields: [ticketId], references: [id])
+
+  changedById  String
+  changedBy    User @relation(fields: [changedById], references: [id])
+
+  fieldChanged String
+  oldValue     String?
+  newValue     String?
+
+  createdAt    DateTime @default(now())
+}
+
+model SLA {
+  id                     String @id @default(uuid())
+
+  responseTimeInMinutes  Int
+  resolutionTimeInMinutes Int
+
+  categoryId             String  @unique
+  category               TicketCategory @relation(fields: [categoryId], references: [id])
+
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}

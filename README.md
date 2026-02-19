@@ -40,6 +40,14 @@ Este projeto foi pensado tanto para uso real em ambientes corporativos quanto co
 
 ---
 
+## 🌳 Política de Branches
+
+- `main`: branch estável e pronta para produção
+- `feature/*`: desenvolvimento de novas funcionalidades
+- `fix/*`: correções de bugs
+ 
+---
+
 ## 📂 Status do Projeto
 
 🚧 Em desenvolvimento — fase inicial de setup e planejamento.

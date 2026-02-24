@@ -1,74 +1,105 @@
-import NextAuth from "next-auth"
-import CredentialsProvider from "next-auth/providers/credentials"
-import { PrismaAdapter } from "@next-auth/prisma-adapter"
-import { prisma } from "@/src/lib/prisma"
-import bcrypt from "bcrypt"
+import NextAuth from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import { prisma } from '@/src/lib/prisma';
+import bcrypt from 'bcrypt';
 
 const handler = NextAuth({
   adapter: PrismaAdapter(prisma),
 
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
 
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+
     CredentialsProvider({
-      name: "Credentials",
+      name: 'Credentials',
 
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Senha", type: "password" },
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Senha', type: 'password' },
       },
 
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null
+          return null;
         }
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
-        })
+        });
 
-        if (!user) return null
+        if (!user) return null;
 
-        if (!user.isActive || user.deletedAt) return null
+        if (!user.isActive || user.deletedAt) return null;
+
+        // se for usuário OAuth (sem senha), bloqueia login por credentials
+        if (!user.password) return null;
 
         const passwordMatch = await bcrypt.compare(
           credentials.password,
           user.password
-        )
+        );
 
-        if (!passwordMatch) return null
+        if (!passwordMatch) return null;
 
         return {
           id: user.id,
           name: user.name,
           email: user.email,
           role: user.role,
-        }
+        };
       },
     }),
   ],
 
   callbacks: {
+    async signIn({ user, account }) {
+      // Garante que usuário Google tenha role definida
+      if (account?.provider === 'google') {
+        const existingUser = await prisma.user.findUnique({
+          where: { email: user.email! },
+        });
+
+        if (existingUser && !existingUser.role) {
+          await prisma.user.update({
+            where: { id: existingUser.id },
+            data: {
+              role: 'CLIENT',
+            },
+          });
+        }
+      }
+
+      return true;
+    },
+
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role
-        token.id = user.id
+        token.id = user.id;
+        token.role = user.role;
       }
-      return token
+
+      return token;
     },
 
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id as string
-        session.user.role = token.role as string
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
       }
-      return session
+
+      return session;
     },
   },
 
   secret: process.env.NEXTAUTH_SECRET,
-})
+});
 
-export { handler as GET, handler as POST }
+export { handler as GET, handler as POST };

@@ -1,4 +1,5 @@
 import '../styles/global.css';
+import AuthProvider from '@/src/providers/session-provider';
 
 export const metadata = {
   title: 'Sistema de Controle de Chamados',
@@ -12,7 +13,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+      </body>
     </html>
   );
 }

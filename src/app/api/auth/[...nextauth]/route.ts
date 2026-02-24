@@ -1,11 +1,11 @@
-import NextAuth from 'next-auth';
+import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { prisma } from '@/src/lib/prisma';
 import bcrypt from 'bcrypt';
 
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
 
   session: {
@@ -36,10 +36,9 @@ const handler = NextAuth({
         });
 
         if (!user) return null;
-
         if (!user.isActive || user.deletedAt) return null;
 
-        // se for usuário OAuth (sem senha), bloqueia login por credentials
+        // bloqueia login por credentials se for OAuth-only
         if (!user.password) return null;
 
         const passwordMatch = await bcrypt.compare(
@@ -61,7 +60,6 @@ const handler = NextAuth({
 
   callbacks: {
     async signIn({ user, account }) {
-      // Garante que usuário Google tenha role definida
       if (account?.provider === 'google') {
         const existingUser = await prisma.user.findUnique({
           where: { email: user.email! },
@@ -100,6 +98,8 @@ const handler = NextAuth({
   },
 
   secret: process.env.NEXTAUTH_SECRET,
-});
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };

@@ -33,6 +33,14 @@ enum Priority {
   URGENT
 }
 
+enum TicketField {
+  STATUS
+  PRIORITY
+  ASSIGNED_TO
+  TITLE
+  DESCRIPTION
+}
+
 //////////////////////////////////////////////////////
 // MODELS
 //////////////////////////////////////////////////////
@@ -132,7 +140,7 @@ model TicketHistory {
   changedById  String
   changedBy    User @relation(fields: [changedById], references: [id])
 
-  fieldChanged String
+  fieldChanged TicketField
   oldValue     String?
   newValue     String?
 

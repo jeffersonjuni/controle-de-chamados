@@ -1,5 +1,5 @@
 import { prisma } from "@/src/lib/prisma"
-import { Role } from "@prisma/client"
+import { Role, TicketField } from "@prisma/client"
 
 interface CreateCommentInput {
   ticketId: string
@@ -32,13 +32,27 @@ export async function createComment({
     throw new Error("You can only comment on your own tickets")
   }
 
-  const comment = await prisma.ticketComment.create({
-    data: {
-      content,
-      ticketId,
-      authorId: userId,
-    },
+  const result = await prisma.$transaction(async (tx) => {
+    const comment = await tx.ticketComment.create({
+      data: {
+        content,
+        ticketId,
+        authorId: userId,
+      },
+    })
+
+    await tx.ticketHistory.create({
+      data: {
+        ticketId,
+        changedById: userId,
+        fieldChanged: TicketField.COMMENT,
+        oldValue: null,
+        newValue: "Comment added",
+      },
+    })
+
+    return comment
   })
 
-  return comment
+  return result
 }

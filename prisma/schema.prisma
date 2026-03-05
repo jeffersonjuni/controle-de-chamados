@@ -39,6 +39,8 @@ enum TicketField {
   ASSIGNED_TO
   TITLE
   DESCRIPTION
+  COMMENT
+  SYSTEM
 }
 
 //////////////////////////////////////////////////////

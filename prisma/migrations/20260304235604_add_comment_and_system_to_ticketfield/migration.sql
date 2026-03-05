@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `TicketHistory` MODIFY `fieldChanged` ENUM('STATUS', 'PRIORITY', 'ASSIGNED_TO', 'TITLE', 'DESCRIPTION', 'COMMENT', 'SYSTEM') NOT NULL;

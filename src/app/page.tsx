@@ -1,8 +1,9 @@
 export default function Home() {
   return (
-    <div>
-      <h1>Sistema de Controle de Chamados</h1>
-      <p>Ambiente: {process.env.NODE_ENV}</p>
+    <div className="flex items-center justify-center h-screen">
+      <h1 className="text-3xl font-bold text-blue-600">
+        Tailwind funcionando 🚀
+      </h1>
     </div>
   );
 }

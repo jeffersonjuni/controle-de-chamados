@@ -1,4 +1,4 @@
-import '../styles/global.css';
+import './globals.css';
 import AuthProvider from '@/src/providers/session-provider';
 
 export const metadata = {

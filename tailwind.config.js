@@ -13,6 +13,7 @@ module.exports = {
 
         primary: '#3b82f6', // azul principal
         primaryHover: '#2563eb',
+        textWhite: '#fff',
 
         secondary: '#94a3b8', // texto secundário
         muted: '#64748b',

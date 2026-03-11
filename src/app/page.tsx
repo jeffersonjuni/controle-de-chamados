@@ -1,23 +1,19 @@
 export default function Home() {
   return (
-    <div className="bg-background min-h-screen flex items-center justify-center">
+    <div className="min-h-screen">
 
-      <div className="bg-surface p-10 rounded-xl border border-border">
+      <div className="container-dashboard">
 
-        <h1 className="text-white text-3xl font-bold">
+        <h1 className="text-3xl font-bold">
           Sistema de Chamados
         </h1>
 
         <p className="text-secondary mt-3">
-          Interface inicial do sistema
+          Estilos globais funcionando.
         </p>
-
-        <button className="mt-6 bg-primary hover:bg-primaryHover text-white px-5 py-2 rounded-lg">
-          Criar chamado
-        </button>
 
       </div>
 
     </div>
-  )
+  );
 }
